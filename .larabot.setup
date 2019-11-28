@@ -1,3 +1,0 @@
-opam switch ocaml-4.08.1-coq-8.10
-eval $(opam env)
-./configure
