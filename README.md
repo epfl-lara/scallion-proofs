@@ -1,9 +1,11 @@
-# Overview
+# Scallion Proofs [![Build Status][larabot-img]][larabot-ref]
+
+### Overview
 
 This project proves the correctness of the parsing with derivatives
 algorithm used in Scallion.
 
-# Roadmap
+### Roadmap
 
 * `Structures.v` contains the definition of the `Syntax` type.
 * `Matches.v` describes when does a syntax associate a value with a token sequence.
@@ -25,7 +27,7 @@ algorithm used in Scallion.
 * `dependencies.pdf` contains a graph of the dependencies between the files.
 
 
-# Installing the dependencies
+### Installing the dependencies
 
 These proofs require Coq 8.10.1 and Coq Equations 1.2+8.10. If you have `opam`
 version 2 installed, these can be installed using the following commands (tested
@@ -54,7 +56,7 @@ If you have trouble installing, please refer to the official webpages:
 * https://github.com/mattam82/Coq-Equations
 
 
-# Compiling the proofs
+### Compiling the proofs
 
 The proofs can be compiled using:
 
@@ -66,3 +68,6 @@ make -j4 // takes around 15 minutes to complete
 The compilation returns spurious warnings because some obligations from the
 `Equations` package cannot be solved automatically. The obligations are all
 solved manually right after in the proof code.
+
+[larabot-img]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/status/master
+[larabot-ref]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/builds
