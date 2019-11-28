@@ -62,7 +62,7 @@ The proofs can be compiled using:
 
 ```
 ./configure
-make -j4 // takes around 15 minutes to complete
+make -j4      # takes around 15 minutes to complete
 ```
 
 The compilation returns spurious warnings because some obligations from the
