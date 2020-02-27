@@ -7,24 +7,24 @@ algorithm used in Scallion.
 
 ### Roadmap
 
-* `Structures.v` contains the definition of the `Syntax` type.
-* `Matches.v` describes when does a syntax associate a value with a token sequence.
-* `FocusedSyntax.v` contains the definition of focused syntaxes, and the `unfocus` function that returns a standard `Syntax`.
-* The `FocusedSyntax*.v` files contain the definitions of functions on
+* [Structures.v](Structures.v) contains the definition of the `Syntax` type.
+* [Matches.v](Matches.v) describes when does a syntax associate a value with a token sequence.
+* [FocusedSyntax.v](FocusedSyntax.v) contains the definition of focused syntaxes, and the `unfocus` function that returns a standard `Syntax`.
+* The [FocusedSyntax*.v](FocusedSyntax*.v) files contain the definitions of functions on
   focused syntaxes and their associated lemmas.
-* `Description.v` contains the definition of *descriptions*, which allow to
+* [Description.v](Description.v) contains the definition of *descriptions*, which allow to
 * The `*Descr.v` files contains the descriptions for the functions on syntaxes: nullable, productive, first, should-not-follow, has-conflict.
   specify functions on syntaxes using inductive rules.
-* `DescriptionInd.v` contains the inductive semantics of *descriptions*
-* `PropagatorNetwork.v` contains a formalisation of propagator networks with
+* [DescriptionInd.v](DescriptionInd.v) contains the inductive semantics of *descriptions*
+* [PropagatorNetwork.v](PropagatorNetwork.v) contains a formalisation of propagator networks with
   termination guarantees.
-* `DescriptionToFunction.v` builds propagator networks to create functions
+* [DescriptionToFunction.v](DescriptionToFunction.v) builds propagator networks to create functions
   based on descriptions.
-* The `DescriptionToFunctionSoundness.v` and `DescriptionToFunctionCompleteness.v` files contain the proofs of soundness
+* The [DescriptionToFunctionSoundness.v](DescriptionToFunctionSoundness.v) and [DescriptionToFunctionCompleteness.v](DescriptionToFunctionCompleteness.v) files contain the proofs of soundness
   and completeness of this construction.
-* `FocusedSyntaxParse.v` contains the proof of correctness (soundness and
+* [FocusedSyntaxParse.v](FocusedSyntaxParse.v) contains the proof of correctness (soundness and
   completeness) for the parsing algorithm based on derivatives of focused syntaxes.
-* `dependencies.pdf` contains a graph of the dependencies between the files.
+* [dependencies.pdf](dependencies.pdf) contains a graph of the dependencies between the files.
 
 
 ### Installing the dependencies
@@ -71,3 +71,26 @@ solved manually right after in the proof code.
 
 [larabot-img]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/status/master
 [larabot-ref]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/builds
+
+
+### Cross-references with the paper
+
+* Theorem 1: Follows from the types assigned to the `matches` predicate in [Matches.v](Matches.v)
+* Theorem 2: [ProductiveInd.v](ProductiveInd.v)
+* Theorem 3: [NullableInd.v](NullableInd.v)
+* Theorem 4: [FirstInd.v](FirstInd.v)
+* Theorem 5: [ShouldNotFollowInd.v](ShouldNotFollowInd.v)
+* Theorem 7: Follows from the completeness of the parsing algorithm: [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
+* Theorem 8: [ShouldNotFollowComplete.v](ShouldNotFollowComplete.v)
+* Theorems of Section 5 are not in Coq, as we directly considered focused
+  syntaxes.
+* Theorem 14: `plug_sound` and `plug_complete` in [FocusedSyntaxPlug.v](FocusedSyntaxPlug.v)
+* Theorem 15: `locate_not_none` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
+* Theorem 16: `locate_first_ind` in [FocusedSyntaxLocate.v](FocusedSyntaxLocate.v)
+* Theorem 17: `locate_sound` and `locate_complete` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
+* Theorem 18: [FocusedSyntaxPierceMatches.v](FocusedSyntaxPierceMatches.v)
+* Theorem 19: [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
+* Theorem 20: `derive_complete` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
+* Theorem 21: `derive_sound_add` and `derive_sound_remove` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
+* Theorem 22: [FocusedSyntaxNullable.v](FocusedSyntaxNullable.v)
+* Theorem 23: [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
