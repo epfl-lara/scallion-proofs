@@ -4,7 +4,7 @@
 
 This project proves the correctness of the parsing with derivatives
 algorithm used in [Scallion](https://github.com/epfl-lara/scallion), which
-is presented this [PLDI paper](https://arxiv.org/pdf/1911.12737.pdf).
+is presented in this [PLDI paper](https://arxiv.org/pdf/1911.12737.pdf).
 
 ### Roadmap
 
