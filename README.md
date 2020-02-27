@@ -3,7 +3,8 @@
 ### Overview
 
 This project proves the correctness of the parsing with derivatives
-algorithm used in Scallion.
+algorithm used in [Scallion](https://github.com/epfl-lara/scallion), which
+is presented this [PLDI paper](https://arxiv.org/pdf/1911.12737.pdf).
 
 ### Roadmap
 
@@ -73,7 +74,8 @@ solved manually right after in the proof code.
 [larabot-ref]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/builds
 
 
-### Cross-references with the paper
+### Cross-references with the [PLDI paper](https://arxiv.org/pdf/1911.12737.pdf)
+
 
 * Theorem 1: Follows from the types assigned to the `matches` predicate in [Matches.v](Matches.v)
 * Theorem 2: [ProductiveInd.v](ProductiveInd.v)
