@@ -9,8 +9,6 @@ Require Import Psatz.
 
 Require Export Parser.Option.
 
-Unset Equations With Funext.
-
 (* Basic list rewrites *)
 Ltac list_rewrites := rewrite List.app_nil_l in * || rewrite List.app_nil_r in *.
 Hint Extern 1 => list_rewrites : list_rewrites.
@@ -296,11 +294,6 @@ Equations (noind) range (a: nat) (b: nat): list nat by wf (b - a) lt :=
     else a :: range (S a) b.
 
 Next Obligation. lia. Qed.
-
-Next Obligation.
-  unfold range; unfold_recursor;
-    repeat light || destruct_match.
-Defined.
 
 Opaque range.
 

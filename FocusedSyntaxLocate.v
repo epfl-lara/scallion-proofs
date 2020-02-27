@@ -6,8 +6,6 @@ Require Export Parser.FocusedSyntaxPlug.
 Opaque plug.
 Opaque unfocus_helper.
 
-Unset Equations With Funext.
-
 Equations (noind) locate { A } (k: token_class) (fs: Focused_Syntax A): option (Focused_Syntax A)
   by wf (length (layers fs) + count_follow_by (layers fs)) lt :=
 
@@ -24,11 +22,6 @@ Equations (noind) locate { A } (k: token_class) (fs: Focused_Syntax A): option (
       end.
 
 Next Obligation. eauto using plug_count_follow_by. Qed.
-
-Next Obligation.
-  unfold locate; unfold_recursor;
-    repeat light || destruct_match.
-Defined.
 
 Fail Next Obligation. (* no more obligations for `locate` *)
 

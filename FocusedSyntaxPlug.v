@@ -5,8 +5,6 @@ Require Import Psatz.
 Require Export Parser.FocusedSyntax.
 Require Export Parser.AmbiguityConflict.
 
-Unset Equations With Funext.
-
 Opaque unfocus_helper.
 Opaque nullable_fun.
 Opaque productive_fun.

@@ -12,8 +12,6 @@ Require Export Parser.HList.
 Require Export Parser.Lexicographic.
 Require Export Parser.Option.
 
-Unset Equations With Funext.
-
 Record Cell: Type := mkCell {
   main_type: Type; (* dummy field to force that equality of cells implies equality of this type *)
   cell_type: Type;
@@ -236,11 +234,6 @@ Qed.
 Next Obligation.
   apply right_lex; auto.
 Qed.
-
-Next Obligation.
-  unfold compute_cells; unfold_recursor;
-    repeat light || destruct_match.
-Defined.
 
 Fail Next Obligation. (* No more obligations for compute_cells *)
 

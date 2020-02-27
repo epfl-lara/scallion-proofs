@@ -67,8 +67,6 @@ Program Definition focus { A } (s: Syntax A): Focused_Syntax A := {|
   layers := Empty A;
 |}.
 
-Unset Equations With Funext.
-
 Equations (noind) unfocus_helper { A T } (layers: Layers T A) (core: Syntax T): Syntax A
   by wf (length layers) lt :=
 

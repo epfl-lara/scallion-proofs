@@ -12,8 +12,6 @@ Program Definition conv { A B } (ls: Layers A B) (pre: empty_layers ls) (x: A): 
   | _ => _
   end pre x.
 
-Unset Equations With Funext.
-
 Equations (noind) result { A } (fs: Focused_Syntax A): option A
   by wf (length (layers fs) + count_follow_by (layers fs)) lt :=
 
@@ -29,12 +27,6 @@ Equations (noind) result { A } (fs: Focused_Syntax A): option A
 Next Obligation.
   auto using plug_count_follow_by.
 Qed.
-
-Next Obligation.
-  unfold result.
-  unfold_recursor;
-    repeat light || destruct_match.
-Defined.
 
 Fail Next Obligation. (* no more obligation for result *)
 

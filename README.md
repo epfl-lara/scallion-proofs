@@ -68,14 +68,6 @@ The proofs can be compiled using:
 make -j4      # takes around 13 minutes to complete
 ```
 
-The compilation returns spurious warnings because some obligations from the
-`Equations` package cannot be solved automatically. The obligations are all
-solved manually right after in the proof code.
-
-[larabot-img]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/status/master
-[larabot-ref]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/builds
-
-
 ### Cross-references with the [PLDI paper](https://arxiv.org/pdf/1911.12737.pdf)
 
 
@@ -98,3 +90,6 @@ solved manually right after in the proof code.
 * Theorem 21: `derive_sound_add` and `derive_sound_remove` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
 * Theorem 22: [FocusedSyntaxNullable.v](FocusedSyntaxNullable.v)
 * Theorem 23: [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
+
+[larabot-img]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/status/master
+[larabot-ref]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/builds

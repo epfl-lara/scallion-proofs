@@ -8,8 +8,6 @@ Opaque nullable_fun.
 Opaque first_fun.
 Opaque unfocus_helper.
 
-Unset Equations With Funext.
-
 Equations (noind) pierce_helper' { A T } (k: token_class) (s: Syntax A) (ls: Layers A T)
   (* these ghost variables are only used for the measure *)
   (ghost_visited: list id)
@@ -84,11 +82,6 @@ Next Obligation.
     eauto using all_vars;
     eauto using self_visitable_conflict with matches.
 Qed.
-
-Next Obligation.
-  unfold pierce_helper'; unfold_recursor;
-    repeat light || destruct_match.
-Defined.
 
 Fail Next Obligation. (* no more obligations for pierce *)
 
