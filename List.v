@@ -278,14 +278,6 @@ Program Definition tail { T } (l: list T) (pre: ~(l = [])) :=
   | _ :: xs => xs
   end.
 
-Equations last { T } (l: list T) (pre: ~(l = [])): T
-  by wf (length l) lt :=
-  last [] _ := _ ;
-  last (x :: []) _ := x ;
-  last (x :: xs) _ := last xs _.
-
-Fail Next Obligation. (* no more obligation for `last` *)
-
 (* a, a + 1, ..., b - 1 *)
 Equations (noind) range (a: nat) (b: nat): list nat by wf (b - a) lt :=
   range a b :=
