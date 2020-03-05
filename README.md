@@ -30,7 +30,7 @@ is presented in this [PLDI paper](https://arxiv.org/pdf/1911.12737.pdf).
 
 ### Installing the dependencies
 
-These proofs require Coq 8.10.2 and Coq Equations 1.2.1+8.10. If you have `opam`
+These proofs require Coq 8.11.0 and Coq Equations 1.2.1+8.11. If you have `opam`
 version 2 installed, these can be installed using the following commands (tested
 on Linux). Replace "new-switch-name" by a name you like for the fresh switch.
 
@@ -40,9 +40,9 @@ The opam binaries are available on https://github.com/ocaml/opam/releases.
 opam init # if you've never used opam before
 opam switch create new-switch-name 4.09.0
 eval $(opam env)
-opam install coq.8.10.2
+opam install coq.8.11.0
 opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-equations.1.2.1+8.10
+opam install coq-equations.1.2.1+8.11
 ```
 
 With older versions of opam, replace the first two commands with:
