@@ -9,7 +9,6 @@ Require Export Psatz. (* lia tactic for linear integer arithmetic *)
 
 Hint Extern 1 => exfalso: exfalso.
 Hint Extern 1 => lia: lia.
-Hint Extern 2 => Omega.omega: lia. (* FIXME: No needed in Coq 8.11 *)
 Hint Extern 1 => congruence: congruence.
 
 (** Light tactic which is fast to execute **)
@@ -246,29 +245,6 @@ Ltac removeDuplicateProps :=
     match type of P with
     | Prop => idtac
     end;  clear H2
-  end.
-
-
-(** This is the default tactic for solving Program/Equations obligations **)
-Ltac default_tactic :=
-  Tactics.program_simplify || Tactics.equations_simpl;
-    try Tactics.program_solve_wf.
-
-
-(** When there is a call to a function which has a postcondition,
-    this enables to get the postcondition as an extra hypothesis **)
-
-Ltac get_post_aux T :=
-  let R := fresh "Prp" in
-  let MM := fresh "MM" in
-  poseNew (Mark T "get_post");
-  pose proof (proj2_sig T) as R.
-
-Ltac get_post :=
-  match goal with
-  | |- context[proj1_sig ?T] => get_post_aux T
-  | H: context[proj1_sig ?T] |- _ => get_post_aux T
-  | H := context[proj1_sig ?T] |- _ => get_post_aux T
   end.
 
 
