@@ -65,7 +65,7 @@ The proofs can be compiled using:
 
 ```
 ./configure
-make -j4      # takes around 13 minutes to complete
+make -j4      # takes 15/20 minutes to complete
 ```
 
 ### Cross-references with the [PLDI paper](https://arxiv.org/pdf/1911.12737.pdf)
