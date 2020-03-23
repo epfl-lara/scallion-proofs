@@ -157,6 +157,14 @@ Proof.
   unfold unfocus at 1; eauto using plug_complete'.
 Qed.
 
+Lemma plug_correct:
+  forall A T (ls: Layers T A) (v: T) (ts: list token) (a: A),
+    matches (unfocus (plug ls v)) ts a <->
+    matches (unfocus {| core := Epsilon v; layers := ls |}) ts a.
+Proof.
+  lights; eauto using plug_complete, plug_sound.
+Qed.
+
 Lemma plug_nullable:
   forall A T (ls: Layers T A) (s: Syntax T) v1 v2,
     ~ has_conflict_ind (unfocus_helper ls s) ->

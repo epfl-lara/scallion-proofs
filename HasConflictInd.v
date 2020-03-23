@@ -10,6 +10,9 @@ Opaque first_fun_sound.
 Definition has_conflict_ind { A } (s: Syntax A): Prop :=
   descr_ind has_conflict_descr s tt.
 
+Definition ll1_ind { A } (s: Syntax A): Prop :=
+  ~has_conflict_ind s.
+
 Lemma has_conflict_epsilon:
   forall A (t: A),
     has_conflict_ind (Epsilon t) ->
@@ -53,7 +56,7 @@ Lemma has_conflict_disj_first2:
   forall A (s1 s2: Syntax A) t1 t2 ts1 ts2 v1 v2,
     matches s1 (t1 :: ts1) v1 ->
     matches s2 (t2 :: ts2) v2 ->
-    class t1 = class t2 ->
+    get_kind t1 = get_kind t2 ->
     has_conflict_ind (Disjunction s1 s2).
 Proof.
   intros.
@@ -132,7 +135,7 @@ Lemma has_conflict_seq_follow2:
     matches s1 [] v1 ->
     matches s1 (t1 :: ts1) v1' ->
     matches s2 (t2 :: ts2) v2 ->
-    class t1 = class t2 ->
+    get_kind t1 = get_kind t2 ->
     has_conflict_ind (Sequence s1 s2).
 Proof.
   intros.

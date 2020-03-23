@@ -11,7 +11,7 @@ Program Definition derive { A } (fs: Focused_Syntax A) (t: token)
     ~ has_conflict_ind (core fs) /\
     ~ have_conflict_ind (layers fs))
     : option (Focused_Syntax A) :=
-  let k := class t in
+  let k := get_kind t in
   let opt := locate k fs in
   if (is_some_dec opt)
   then
@@ -58,13 +58,13 @@ Proof.
 
   -revert H.
     generalize (derive_obligation_1 A fs t pre i).
-    destruct (locate (class t) fs) eqn:L;
+    destruct (locate (get_kind t) fs) eqn:L;
       repeat light.
     apply locate_no_conflicts in L; lights.
 
   - revert H.
     generalize (derive_obligation_1 A fs t pre i).
-    destruct (locate (class t) fs) eqn:L;
+    destruct (locate (get_kind t) fs) eqn:L;
       lights.
     apply locate_no_conflict in L; lights.
 Qed.
@@ -84,9 +84,18 @@ Proof.
   generalize (derive_obligation_2 A fs t pre i); lights.
   revert a H0.
   generalize (derive_obligation_1 A fs t pre i); lights.
-  destruct (locate (class t) fs) eqn:L;
+  destruct (locate (get_kind t) fs) eqn:L;
     repeat light || destruct_and;
     eauto using pierce_no_conflict_unfocus, locate_no_conflict_unfocus_helper.
+Qed.
+
+Lemma derive_preserves_ll1:
+  forall A (fs: Focused_Syntax A) t fs' pre,
+    derive fs t pre = Some fs' ->
+    ll1_ind (unfocus fs) ->
+    ll1_ind (unfocus fs').
+Proof.
+  unfold ll1_ind; lights; eauto using derive_no_conflict_unfocus.
 Qed.
 
 Lemma derive_sound_add:
@@ -150,13 +159,46 @@ Proof.
   - eapply_anywhere locate_no_conflict_unfocus; eauto.
 Qed.
 
+Lemma derive_sound:
+  forall A (fs fs': Focused_Syntax A) t pre,
+    derive fs t pre = Some fs' ->
+    ~ has_conflict_ind (unfocus fs) ->
+    forall ts v,
+      matches (unfocus fs') ts v <->
+      matches (unfocus fs) (t :: ts) v.
+Proof.
+  lights; eauto using derive_sound_add, derive_sound_remove.
+Qed.
+
 Lemma derive_complete:
   forall A (fs: Focused_Syntax A) t ts pre v,
     matches (unfocus fs) (t :: ts) v ->
-    ~ has_conflict_ind (unfocus fs) ->
     is_some (derive fs t pre).
 Proof.
   unfold derive, unfocus;
     repeat light || destruct_match || invert_constructor_equalities;
     eauto using locate_is_some.
+Qed.
+
+Lemma derive_none_same_kind:
+  forall A (fs: Focused_Syntax A) t1 t2 pre,
+    derive fs t1 pre = None ->
+    get_kind t1 = get_kind t2 ->
+    derive fs t2 pre = None.
+Proof.
+  unfold derive;
+    repeat light || destruct_match || clear_some_dec.
+Qed.
+
+Lemma derive_none:
+  forall A (fs: Focused_Syntax A) t pre,
+    derive fs t pre = None ->
+    ~ first_ind (unfocus fs) (get_kind t).
+Proof.
+  repeat light.
+  apply_anywhere first_ind_sound; lights.
+  apply (derive_complete _ _ _ _ pre) in H2;
+    repeat light || options || destruct_match || destruct_and.
+
+  erewrite derive_none_same_kind in matched; eauto; lights.
 Qed.

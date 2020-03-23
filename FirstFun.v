@@ -40,7 +40,7 @@ Qed.
 Lemma first_fun_sound:
   forall A (s: Syntax A) k,
     In k (first_fun s) ->
-    exists x xs v, matches s (x :: xs) v /\ class x = k.
+    exists x xs v, get_kind x = k /\ matches s (x :: xs) v.
 Proof.
   intros; rewrite first_fun_correct in *;
     eauto using first_ind_sound.
@@ -49,7 +49,7 @@ Qed.
 Lemma first_fun_complete:
   forall A (s: Syntax A) x xs v,
     matches s (x :: xs) v ->
-    In (class x) (first_fun s).
+    In (get_kind x) (first_fun s).
 Proof.
   intros; rewrite first_fun_correct;
     eauto using first_ind_complete.
@@ -59,7 +59,7 @@ Lemma first_fun_spec:
   forall A (s: Syntax A) k,
     In k (first_fun s) <->
     exists t ts v,
-      class t = k /\
+      get_kind t = k /\
       matches s (t :: ts) v.
 Proof.
   repeat light || apply_anywhere first_fun_sound;
@@ -196,7 +196,7 @@ Proof.
          invert_constructor_equalities || instantiate_any;
     eauto 7 with matches.
 
-  unshelve epose proof (H0 (class t0) _);
+  unshelve epose proof (H0 (get_kind t0) _);
     repeat light || rewrite first_fun_spec in *;
     eauto 7 with matches.
 Qed.
@@ -213,4 +213,3 @@ Hint Immediate first_fun_eps_seq2: first_fun.
 Hint Immediate first_fun_map2: first_fun.
 Hint Immediate first_fun_var2: first_fun.
 Hint Immediate first_fun_epsilon: first_fun.
-

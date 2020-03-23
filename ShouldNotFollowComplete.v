@@ -80,7 +80,7 @@ Qed.
 Lemma should_not_follow_fun_pierce_helper_subset_helper:
   forall m A T (ls: Layers A T) core t k gv pre,
     (List.length vars - List.length gv, syntax_size core) = m ->
-    In k (should_not_follow_fun (unfocus_helper (pierce_helper (class t) core ls gv pre) (Epsilon t))) ->
+    In k (should_not_follow_fun (unfocus_helper (pierce_helper (get_kind t) core ls gv pre) (Epsilon t))) ->
     In k (should_not_follow_fun (unfocus_helper ls core)).
 Proof.
   induction m using measure_induction; destruct core;
@@ -117,7 +117,7 @@ Proof.
     revert IH.
     generalize i.
     generalize (FocusedSyntaxPierce.pierce_helper'_obligations_obligation_9 A B
-                          (class t) core1 core2 gv pre).
+                          (get_kind t) core1 core2 gv pre).
     rewrite N;
       lights.
 
@@ -146,7 +146,7 @@ Qed.
 
 Lemma should_not_follow_fun_pierce_helper_subset:
   forall A T (ls: Layers A T) core t k gv pre,
-    In k (should_not_follow_fun (unfocus_helper (pierce_helper (class t) core ls gv pre) (Epsilon t))) ->
+    In k (should_not_follow_fun (unfocus_helper (pierce_helper (get_kind t) core ls gv pre) (Epsilon t))) ->
     In k (should_not_follow_fun (unfocus_helper ls core)).
 Proof.
   eauto using should_not_follow_fun_pierce_helper_subset_helper.
@@ -154,7 +154,7 @@ Qed.
 
 Lemma should_not_follow_fun_pierce_subset:
   forall A T (ls: Layers A T) core t k pre,
-    In k (should_not_follow_fun (unfocus_helper (pierce (class t) core ls pre) (Epsilon t))) ->
+    In k (should_not_follow_fun (unfocus_helper (pierce (get_kind t) core ls pre) (Epsilon t))) ->
     In k (should_not_follow_fun (unfocus_helper ls core)).
 Proof.
   unfold pierce;
@@ -175,8 +175,8 @@ Proof.
   generalize (FocusedSyntaxDerive.derive_obligation_2 A s t pre).
   generalize (FocusedSyntaxDerive.derive_obligation_1 A s t pre).
   repeat light || options || destruct_match.
-  generalize (locate (class t) s).
-  destruct (locate (class t) s) eqn:L;
+  generalize (locate (get_kind t) s).
+  destruct (locate (get_kind t) s) eqn:L;
     repeat light || invert_constructor_equalities.
   eapply should_not_follow_fun_locate_subset; eauto; unfold unfocus;
     eauto using should_not_follow_fun_pierce_subset.
@@ -187,7 +187,7 @@ Theorem should_not_follow_fun_complete':
     matches (unfocus fs) xs v1 ->
     matches (unfocus fs) (xs ++ t :: ys) v2 ->
     ll1_fun (unfocus fs) = true ->
-    In (class t) (should_not_follow_fun (unfocus fs)).
+    In (get_kind t) (should_not_follow_fun (unfocus fs)).
 Proof.
   unfold unfocus;
     induction xs; repeat light || apply_anywhere ll1_fun_true;
@@ -211,9 +211,26 @@ Theorem should_not_follow_fun_complete:
     matches s xs v1 ->
     matches s (xs ++ t :: ys) v2 ->
     ll1_fun s = true ->
-    In (class t) (should_not_follow_fun s).
+    In (get_kind t) (should_not_follow_fun s).
 Proof.
   intros.
   pose proof (unfocus_focus _ s) as HU.
   rewrite <- HU in *; eauto using should_not_follow_fun_complete'.
+Qed.
+
+Theorem should_not_follow_ind_correct:
+  forall A (s: Syntax A) k,
+    ll1_ind s ->
+      should_not_follow_ind s k <->
+      exists t ts1 ts2 v1 v2,
+        get_kind t = k /\
+        matches s ts1 v1 /\
+        matches s (ts1 ++ t :: ts2) v2.
+Proof.
+  lights.
+  - apply_anywhere should_not_follow_ind_sound; lights; eauto 8.
+  - apply should_not_follow_ind_fun.
+    apply should_not_follow_fun_complete with ts1 ts2 v1 v2; lights.
+    unfold ll1_ind in *; repeat light || bools.
+    destruct (ll1_fun s) eqn:LL1; lights; eauto using ll1_fun_false.
 Qed.

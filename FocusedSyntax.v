@@ -265,7 +265,7 @@ Ltac matches_unfocus_helper_prefix :=
 Lemma matches_unfocus_helper_sub_first:
   forall A T (ls: Layers T A) (core1 core2: Syntax T) t ts v,
     matches (unfocus_helper ls core1) (t :: ts) v ->
-    In (class t) (first_fun core1) ->
+    In (get_kind t) (first_fun core1) ->
     ~ has_conflict_ind (unfocus_helper ls core1) ->
     (forall ts' v', matches core1 (t :: ts') v' -> matches core2 (t :: ts') v') ->
     matches (unfocus_helper ls core2) (t :: ts) v.
@@ -287,14 +287,13 @@ Proof.
   - apply_anywhere matches_unfocus_helper_prefix;
       repeat light || invert_matches || invert_constructor_equalities.
     eapply first_fun_seq_l;
-      repeat light || rewrite <- H4;
+      repeat light || rewrite <- H3;
       eauto using first_fun_complete.
 Qed.
 
 Lemma matches_unfocus_helper_sub_first2:
   forall A T (ls: Layers T A) (core1 core2: Syntax T) t ts v,
     matches (unfocus_helper ls core1) (t :: ts) v ->
-    ~ has_conflict_ind (unfocus_helper ls core1) ->
     (forall v', matches core1 [] v' -> matches core2 [] v') ->
     (forall ts' v', matches core1 (t :: ts') v' -> matches core2 (t :: ts') v') ->
     matches (unfocus_helper ls core2) (t :: ts) v.
@@ -304,6 +303,21 @@ Proof.
            eapply_any || invert_constructor_equalities || app_cons_destruct || lists;
     eauto with matches;
     eauto with first_fun.
+Qed.
+
+Lemma matches_unfocus_helper_sub_first3:
+  forall A T (ls: Layers T A) (core1 core2: Syntax T) t ts v,
+    matches (unfocus_helper ls core1) (t :: ts) v ->
+    (forall v', matches core1 [] v' ->
+      exists v'', matches core2 [] v'') ->
+    (forall ts' v', matches core1 (t :: ts') v' ->
+      exists v'', matches core2 (t :: ts') v'') ->
+    exists v'', matches (unfocus_helper ls core2) (t :: ts) v''.
+Proof.
+  induction ls; intros; try destruct_layer;
+    repeat light || destruct_layer || unfocus_helper_def || invert_matches ||
+           eapply_any || invert_constructor_equalities || app_cons_destruct || lists;
+  try solve [ instantiate_any; lights; eauto with matches ].
 Qed.
 
 Lemma matches_unfocus_prepend:
@@ -321,10 +335,10 @@ Qed.
 Lemma matches_unfocus_prepend_one:
   forall A (ls: Layers token A) t ts v,
     matches (unfocus_helper ls (Epsilon t)) ts v ->
-    matches (unfocus_helper ls (Elem (class t))) (t :: ts) v.
+    matches (unfocus_helper ls (Elem (get_kind t))) (t :: ts) v.
 Proof.
   intros.
-  change (matches (unfocus_helper ls (Elem (class t))) ([ t ] ++ ts) v).
+  change (matches (unfocus_helper ls (Elem (get_kind t))) ([ t ] ++ ts) v).
   eapply matches_unfocus_prepend;
     eauto; repeat light || invert_matches || lists;
       eauto with matches.
@@ -333,7 +347,7 @@ Qed.
 Lemma matches_unfocus_drop:
   forall A T (ls: Layers T A) (s1 s2: Syntax T) t ts v,
     matches (unfocus_helper ls s1) (t :: ts) v ->
-    In (class t) (first_fun s1) ->
+    In (get_kind t) (first_fun s1) ->
     ~ has_conflict_ind (unfocus_helper ls s1) ->
     (forall ts v, matches s1 (t :: ts) v -> matches s2 ts v) ->
     matches (unfocus_helper ls s2) ts v.
@@ -391,9 +405,8 @@ Qed.
 Lemma matches_unfocus_propagate_first:
   forall A T (ls: Layers T A) (s1 s2: Syntax T) t ts v v',
     matches (unfocus_helper ls s1) (t :: ts) v' ->
-    ~ In (class t) (first_fun s1) ->
+    ~ In (get_kind t) (first_fun s1) ->
     ~ has_conflict_ind (unfocus_helper ls s1) ->
-    ~ has_conflict_ind (unfocus_helper ls s2) ->
     matches s1 [] v ->
     matches s2 [] v ->
     matches (unfocus_helper ls s2) (t :: ts) v'.

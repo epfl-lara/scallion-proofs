@@ -7,7 +7,7 @@ Require Export Parser.Matches.
 
 Definition nullable_ind { A }: Syntax A -> A -> Prop := descr_ind nullable_descr.
 
-Lemma nullable_sound:
+Lemma nullable_ind_sound:
   forall A (s: Syntax A) (v: A),
     nullable_ind s v ->
     matches s nil v.
@@ -18,14 +18,21 @@ Proof.
     eauto with matches.
 Qed.
 
-Lemma nullable_complete:
+Lemma nullable_ind_complete:
   forall A (s: Syntax A) (v: A),
     matches s nil v ->
-    exists v', nullable_ind s v'.
+    nullable_ind s v.
 Proof.
   unfold nullable_ind; intros.
   remember [] as forgotten.
   remember [] as ts in H.
   induction H;
     repeat light || lists; eauto 3 with descr_ind lights.
+Qed.
+
+Lemma nullable_ind_correct:
+  forall A (s: Syntax A) v,
+    nullable_ind s v <-> matches s nil v.
+Proof.
+  lights; eauto using nullable_ind_sound, nullable_ind_complete.
 Qed.

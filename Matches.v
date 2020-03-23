@@ -6,17 +6,17 @@ Import ListNotations.
 Require Import PeanoNat.
 Require Import Psatz. (* lia tactic for linear integer arithmetic *)
 
-Require Import Parser.Structures.
-Require Import Parser.Tactics.
-Require Import Parser.List.
-Require Import Parser.BasicLemmas.
+Require Export Parser.Structures.
+Require Export Parser.Tactics.
+Require Export Parser.List.
+Require Export Parser.BasicLemmas.
 
 (*** Matching ***)
 
 Inductive matches_without (forbidden: list id): forall A: Type, Syntax A -> list token -> A -> Prop :=
   | MEps: forall A v, matches_without forbidden A (Epsilon v) nil v
   | MElem: forall (t: token),
-      matches_without forbidden token (Elem (class t)) (cons t nil) t
+      matches_without forbidden token (Elem (get_kind t)) (cons t nil) t
   | MDisL: forall A (s1 s2 : Syntax A) (xs : list token) (a: A),
       matches_without forbidden A s1 xs a ->
       matches_without forbidden A (Disjunction s1 s2) xs a
@@ -55,7 +55,7 @@ Lemma matches_without_inversion:
     | @Elem tc =>
       fun v =>
         xs = [ v ] /\
-        class v = tc
+        get_kind v = tc
     | @Disjunction B s1 s2 =>
       fun v =>
         matches_without forbidden s1 xs v \/
@@ -104,7 +104,7 @@ Qed.
 Lemma matches_elem:
   forall forbidden tc xs v,
     matches_without forbidden (Elem tc) xs v ->
-      xs = cons v nil /\ class v = tc.
+      xs = cons v nil /\ get_kind v = tc.
 Proof.
   intros.
   pose proof (matches_without_inversion _ _ _ _ _ H); lights.

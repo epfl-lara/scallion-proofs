@@ -31,12 +31,12 @@ Lemma should_not_follow_fun_sound:
     exists xs t ys v1 v2,
       matches s xs v1 /\
       matches s (xs ++ t :: ys) v2 /\
-      class t = k.
+      get_kind t = k.
 Proof.
   unfold should_not_follow_fun, should_not_follow_fun'; intros.
   rewrite filter_In in *; repeat light || options || destruct_match || destruct_unit.
   pose proof (fun_soundness _ (should_not_follow_descr k) _ s tt); lights.
-  apply should_not_follow_sound in H2; auto.
+  apply should_not_follow_ind_sound in H2; auto.
 Qed.
 
 Lemma should_not_follow_ind_fun:
@@ -58,10 +58,10 @@ Lemma should_not_follow_fun_first:
   forall A (s: Syntax A) t ts v1 v2,
     matches s [] v1 ->
     matches s (t :: ts) v2 ->
-    In (class t) (should_not_follow_fun s).
+    In (get_kind t) (should_not_follow_fun s).
 Proof.
   repeat light || rewrite <- should_not_follow_ind_fun in *;
-    eauto using should_not_follow_first.
+    eauto using should_not_follow_ind_first.
 Qed.
 
 Lemma should_not_follow_fun_epsilon:

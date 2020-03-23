@@ -25,7 +25,7 @@ Equations (noind) pierce_helper' { A T } (k: token_class) (s: Syntax A) (ls: Lay
   pierce_helper' k (Elem _) ls gv _ := ls;
 
   pierce_helper' k (Disjunction s1 s2) ls gv _ :=
-    if (in_dec class_eq_dec k (first_fun s1))
+    if (in_dec kind_eq_dec k (first_fun s1))
     then pierce_helper' k s1 ls gv _
     else pierce_helper' k s2 ls gv _;
 
@@ -33,7 +33,7 @@ Equations (noind) pierce_helper' { A T } (k: token_class) (s: Syntax A) (ls: Lay
     let opt := nullable_fun s1 in
     if (is_some_dec opt)
     then
-      if (in_dec class_eq_dec k (first_fun s1))
+      if (in_dec kind_eq_dec k (first_fun s1))
       then pierce_helper' k s1 (Cons (LFollowBy A1 s2) ls) gv _
       else pierce_helper' k s2 (Cons (LPrepend A2 (get_option opt _)) ls) gv _
     else
@@ -137,7 +137,7 @@ Definition pierce_helper_and_props:
              forall (A2 T : Type) (k : token_class) (s s0 : Syntax A2) (ls : Layers A2 T)
                ghost_visited pre,
                pierce_helper _ _ k (Disjunction s s0) ls ghost_visited pre =
-               match in_dec class_eq_dec k (first_fun s) with
+               match in_dec kind_eq_dec k (first_fun s) with
                | left x =>
                  pierce_helper _ _ k s ls ghost_visited
                                 (pierce_helper'_obligations_obligation_3 A2 k s s0 ghost_visited pre x)
@@ -152,7 +152,7 @@ Definition pierce_helper_and_props:
                (let opt := nullable_fun s1 in
                 match is_some_dec opt with
                 | left x =>
-                  match in_dec class_eq_dec k (first_fun s1) with
+                  match in_dec kind_eq_dec k (first_fun s1) with
                   | left x0 =>
                     pierce_helper _ _ k s1 (Cons (LFollowBy A3 s2) ls) ghost_visited
                                    (pierce_helper'_obligations_obligation_7 A3 B k s1 s2 ghost_visited pre x x0)
@@ -263,7 +263,7 @@ Qed.
 Lemma pierce_helper_no_conflict_unfocus':
   forall m A T (ls: Layers T A) (s: Syntax T) t gv pre,
     (List.length vars - List.length gv, syntax_size s) = m ->
-    has_conflict_ind (unfocus_helper (pierce_helper (class t) s ls gv pre) (Epsilon t)) ->
+    has_conflict_ind (unfocus_helper (pierce_helper (get_kind t) s ls gv pre) (Epsilon t)) ->
     has_conflict_ind (unfocus_helper ls s).
 Proof.
   induction m using measure_induction;
@@ -286,7 +286,7 @@ Qed.
 
 Lemma pierce_helper_no_conflict_unfocus:
   forall A T (ls: Layers T A) (s: Syntax T) t gv pre,
-    has_conflict_ind (unfocus_helper (pierce_helper (class t) s ls gv pre) (Epsilon t)) ->
+    has_conflict_ind (unfocus_helper (pierce_helper (get_kind t) s ls gv pre) (Epsilon t)) ->
     has_conflict_ind (unfocus_helper ls s).
 Proof.
   eauto using pierce_helper_no_conflict_unfocus'.
@@ -294,7 +294,7 @@ Qed.
 
 Lemma pierce_no_conflict_unfocus:
   forall A T (ls: Layers T A) (s: Syntax T) t pre,
-    has_conflict_ind (unfocus_helper (pierce (class t) s ls pre) (Epsilon t)) ->
+    has_conflict_ind (unfocus_helper (pierce (get_kind t) s ls pre) (Epsilon t)) ->
     has_conflict_ind (unfocus_helper ls s).
 Proof.
   unfold pierce;

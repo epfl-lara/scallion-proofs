@@ -4,8 +4,8 @@ Require Import Coq.Lists.List.
 Require Import PeanoNat.
 Require Import Psatz. (* lia tactic for linear integer arithmetic *)
 
-Require Import Parser.Structures.
-Require Import Parser.Tactics.
+Require Export Parser.Structures.
+Require Export Parser.Tactics.
 
 Fixpoint remove_id (xs : names) (i : id) : names := match xs with
   | nil => nil

@@ -10,7 +10,7 @@ Opaque first_fun.
 Lemma pierce_helper_sound':
   forall m A T (ls: Layers T A) (s: Syntax T) t gv pre ts v,
     (List.length vars - List.length gv, syntax_size s) = m ->
-    matches (unfocus_helper (pierce_helper (class t) s ls gv pre) (Elem (class t))) ts v ->
+    matches (unfocus_helper (pierce_helper (get_kind t) s ls gv pre) (Elem (get_kind t))) ts v ->
     matches (unfocus_helper ls s) ts v.
 Proof.
   induction m using measure_induction;
@@ -39,7 +39,7 @@ Qed.
 
 Lemma pierce_helper_sound:
   forall A T (ls: Layers T A) (s: Syntax T) t gv pre ts v,
-    matches (unfocus_helper (pierce_helper (class t) s ls gv pre) (Elem (class t))) ts v ->
+    matches (unfocus_helper (pierce_helper (get_kind t) s ls gv pre) (Elem (get_kind t))) ts v ->
     matches (unfocus_helper ls s) ts v.
 Proof.
   eauto using pierce_helper_sound'.
@@ -47,7 +47,7 @@ Qed.
 
 Lemma pierce_sound:
   forall A (fs: Focused_Syntax A) t pre ts v,
-    matches (unfocus_helper (pierce (class t) (core fs) (layers fs) pre) (Elem (class t))) ts v ->
+    matches (unfocus_helper (pierce (get_kind t) (core fs) (layers fs) pre) (Elem (get_kind t))) ts v ->
     matches (unfocus fs) ts v.
 Proof.
   unfold unfocus, pierce;
@@ -57,10 +57,10 @@ Qed.
 Lemma pierce_helper_complete':
   forall m A T (ls: Layers T A) (s: Syntax T) gv t ts v pre,
     (List.length vars - List.length gv, syntax_size s) = m ->
-    In (class t) (first_fun s) ->
+    In (get_kind t) (first_fun s) ->
     ~ has_conflict_ind (unfocus_helper ls s) ->
     matches (unfocus_helper ls s) (t :: ts) v ->
-    matches (unfocus_helper (pierce_helper (class t) s ls gv pre) (Elem (class t))) (t :: ts) v.
+    matches (unfocus_helper (pierce_helper (get_kind t) s ls gv pre) (Elem (get_kind t))) (t :: ts) v.
 Proof.
   induction m using measure_induction;
     destruct s;
@@ -94,21 +94,44 @@ Qed.
 
 Lemma pierce_helper_complete:
   forall A T (ls: Layers T A) (s: Syntax T) gv t ts v pre,
-    In (class t) (first_fun s) ->
+    In (get_kind t) (first_fun s) ->
     ~ has_conflict_ind (unfocus_helper ls s) ->
     matches (unfocus_helper ls s) (t :: ts) v ->
-    matches (unfocus_helper (pierce_helper (class t) s ls gv pre) (Elem (class t))) (t :: ts) v.
+    matches (unfocus_helper (pierce_helper (get_kind t) s ls gv pre) (Elem (get_kind t))) (t :: ts) v.
 Proof.
   eauto using pierce_helper_complete'.
 Qed.
 
 Lemma pierce_complete:
   forall A (fs: Focused_Syntax A) t ts v pre,
-    In (class t) (first_fun (core fs)) ->
+    In (get_kind t) (first_fun (core fs)) ->
     ~ has_conflict_ind (unfocus fs) ->
     matches (unfocus fs) (t :: ts) v ->
-    matches (unfocus_helper (pierce (class t) (core fs) (layers fs) pre) (Elem (class t))) (t :: ts) v.
+    matches (unfocus_helper (pierce (get_kind t) (core fs) (layers fs) pre) (Elem (get_kind t))) (t :: ts) v.
 Proof.
   unfold unfocus, pierce;
     eauto using pierce_helper_complete.
+Qed.
+
+Program Definition pierce_correct_statement: Prop :=
+  forall A (fs: Focused_Syntax A) k
+    (H1: first_ind (core fs) k)
+    (H2: ll1_ind (unfocus fs)),
+    forall t ts v, get_kind t = k ->
+      matches (unfocus_helper (pierce k (core fs) (layers fs) _) (Elem k)) (t :: ts) v <->
+      matches (unfocus fs) (t :: ts) v.
+
+Next Obligation.
+  unfold ll1_ind in *; lights; eauto using unfocus_conflict_remains.
+  apply first_fun_correct; auto.
+Qed.
+
+Fail Next Obligation. (* pierce_correct_statement *)
+
+Lemma pierce_correct: pierce_correct_statement.
+Proof.
+  unfold pierce_correct_statement.
+  lights; eauto using pierce_sound.
+  apply pierce_complete; lights.
+  apply first_fun_correct; auto.
 Qed.

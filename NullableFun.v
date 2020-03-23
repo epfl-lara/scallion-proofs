@@ -21,7 +21,7 @@ Proof.
   unfold nullable_fun; intros.
   pose proof (fun_soundness _ nullable_descr _ s v);
     repeat light || destruct_match.
-  apply nullable_sound in H1; auto.
+  apply nullable_ind_sound in H1; auto.
 Qed.
 
 Lemma monotonic_nullable: monotonic_descr nullable_descr.
@@ -41,8 +41,8 @@ Lemma nullable_fun_none:
     False.
 Proof.
   unfold nullable_fun; intros.
-  apply nullable_complete in H0; unfold nullable_ind in *; lights.
-  pose proof (fun_completeness _ nullable_descr _ s v' H0  monotonic_nullable);
+  apply nullable_ind_complete in H0; unfold nullable_ind in *; lights.
+  pose proof (fun_completeness _ nullable_descr _ s v H0  monotonic_nullable);
     repeat light || destruct_match || options.
 Qed.
 

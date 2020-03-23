@@ -7,13 +7,13 @@ Require Export Parser.ShouldNotFollowDescr.
 Definition should_not_follow_ind { A } (s: Syntax A) (k: token_class): Prop :=
   descr_ind (should_not_follow_descr k) s tt.
 
-Lemma should_not_follow_sound:
+Lemma should_not_follow_ind_sound:
   forall A (s: Syntax A) k,
     should_not_follow_ind s k ->
-    exists xs t ys v1 v2,
-      matches s xs v1 /\
-      matches s (xs ++ t :: ys) v2 /\
-      class t = k
+    exists ts1 t ts2 v1 v2,
+      matches s ts1 v1 /\
+      matches s (ts1 ++ t :: ts2) v2 /\
+      get_kind t = k
    .
 Proof.
   induction 1;
@@ -22,13 +22,13 @@ Proof.
     eauto 12 with matches.
 Qed.
 
-Lemma should_not_follow_first:
+Lemma should_not_follow_ind_first:
   forall A (s: Syntax A) ts v1,
     matches s ts v1 ->
     forall t ts' v2,
       ts = nil ->
       matches s (t :: ts') v2 ->
-      should_not_follow_ind s (class t).
+      should_not_follow_ind s (get_kind t).
 Proof.
   unfold should_not_follow_ind;
   induction 1;

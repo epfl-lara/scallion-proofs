@@ -103,3 +103,17 @@ Proof.
   destruct fs;
     eauto using result_complete'.
 Qed.
+
+Lemma result_correct:
+  forall A (fs: Focused_Syntax A),
+    ll1_ind (unfocus fs) ->
+    result fs = nullable_fun (unfocus fs).
+Proof.
+  unfold ll1_ind; intros.
+  destruct (result fs) eqn:RES;
+  destruct (nullable_fun (unfocus fs)) eqn:NULL;
+    repeat light || nullable_fun_spec.
+  - apply_anywhere result_sound; matches_nil_unicity; lights.
+  - apply_anywhere result_sound; eauto with exfalso.
+  - apply_anywhere result_complete; lights.
+Qed.

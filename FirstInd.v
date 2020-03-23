@@ -1,18 +1,10 @@
 Require Import Coq.Lists.List.
 Import ListNotations.
 
-Require Import Parser.Structures.
-Require Import Parser.Option.
-Require Import Parser.List.
-Require Import Parser.Description.
-Require Import Parser.DescriptionInd.
-Require Import Parser.CommonRules.
-Require Import Parser.NullableFun.
-Require Import Parser.ProductiveFun.
-Require Import Parser.Matches.
-Require Import Parser.Tactics.
-Require Import Parser.HList.
-
+Require Export Parser.DescriptionInd.
+Require Export Parser.NullableFun.
+Require Export Parser.ProductiveFun.
+Require Export Parser.Matches.
 Require Export Parser.FirstDescr.
 
 Definition first_ind { A } (s: Syntax A) (k: token_class): Prop :=
@@ -21,7 +13,7 @@ Definition first_ind { A } (s: Syntax A) (k: token_class): Prop :=
 Lemma first_ind_sound:
   forall A (s: Syntax A) k,
     first_ind s k ->
-    exists x xs v, matches s (x :: xs) v /\ class x = k.
+    exists t ts v, get_kind t = k /\ matches s (t :: ts) v.
 Proof.
   induction 1;
     repeat light || lists || instantiate_any || destruct_match || rules ||
@@ -32,7 +24,7 @@ Qed.
 Lemma first_ind_complete:
   forall A (s: Syntax A) t ts v,
     matches s (t :: ts) v ->
-    first_ind s (class t).
+    first_ind s (get_kind t).
 Proof.
   unfold first_ind; intros.
   remember (t :: ts) as xs.
@@ -46,4 +38,12 @@ Proof.
       repeat light || lists || destruct_match || nullable_fun_spec || productive_fun_spec; eauto.
   - apply SeqInd1 with left_rule tt;
       repeat light || lists || destruct_match || nullable_fun_spec || productive_fun_spec || invert_constructor_equalities; eauto.
+Qed.
+
+Lemma first_ind_correct:
+  forall A (s: Syntax A) k,
+    first_ind s k <->
+    exists t ts v, get_kind t = k /\ matches s (t :: ts) v.
+Proof.
+  lights; eauto using first_ind_sound, first_ind_complete.
 Qed.

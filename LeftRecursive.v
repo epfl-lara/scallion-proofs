@@ -172,17 +172,17 @@ Proof.
     eauto with has_conflict_ind matches.
 
   - pose proof (visitable_extend _ _ _ _ _ H H7); lights.
-    apply has_conflict_disj_first with (class t);
+    apply has_conflict_disj_first with (get_kind t);
     repeat light || eapply first_fun_complete || eapply should_not_follow_fun_first;
       eauto.
 
   - pose proof (visitable_extend _ _ _ _ _ H H8); lights.
-    apply has_conflict_disj_first with (class t);
+    apply has_conflict_disj_first with (get_kind t);
     repeat light || eapply first_fun_complete || eapply should_not_follow_fun_first;
       eauto.
 
   - pose proof (visitable_extend _ _ _ _ _ H H13); lights.
-    apply has_conflict_seq_follow with (class t);
+    apply has_conflict_seq_follow with (get_kind t);
       repeat light || eapply first_fun_complete || eapply should_not_follow_fun_first;
       eauto.
 
@@ -190,13 +190,13 @@ Proof.
       eauto with has_conflict_ind matches.
     destruct ts' eqn:TSP; repeat light || prefix_sub || prefix.
     + pose proof (visitable_extend _ _ _ _ _ H H5); lights.
-      apply has_conflict_seq_follow with (class t);
+      apply has_conflict_seq_follow with (get_kind t);
         repeat light || eapply first_fun_complete || eapply should_not_follow_fun_first;
         eauto.
     + destruct (nullable_fun s1) eqn:N1;
         repeat light || nullable_fun_spec || prefix_sub || prefix.
       * pose proof (visitable_extend _ _ _ _ _ H H5); lights.
-        apply has_conflict_seq_follow with (class t);
+        apply has_conflict_seq_follow with (get_kind t);
           repeat light || eapply first_fun_complete || eapply should_not_follow_fun_first;
           eauto.
       * apply has_conflict_seq_l.
@@ -254,7 +254,7 @@ Lemma visitable_not_first_conflict:
     visitable x s ->
     forall t ts v,
       prefix s (e x) ->
-      ~ In (class t) (first_fun s) ->
+      ~ In (get_kind t) (first_fun s) ->
       matches (e x) (t :: ts) v ->
       has_conflict_ind s.
 Proof.
@@ -306,7 +306,7 @@ Proof.
             lights.
         apply visitable_not_nullable_conflict with x v0;
           repeat light; eauto using subsyntax_prefix with subsyntax.
-    + destruct (in_dec class_eq_dec (class t) (first_fun s1)).
+    + destruct (in_dec kind_eq_dec (get_kind t) (first_fun s1)).
       * eapply has_conflict_disj_first;
           repeat light || apply_anywhere first_fun_sound || rewrite first_fun_spec ||
                  invert_constructor_equalities;
@@ -330,7 +330,7 @@ Proof.
             lights.
         apply visitable_not_nullable_conflict with x v0;
           repeat light; eauto using subsyntax_prefix with subsyntax.
-    + destruct (in_dec class_eq_dec (class t) (first_fun s2)).
+    + destruct (in_dec kind_eq_dec (get_kind t) (first_fun s2)).
       * eapply has_conflict_disj_first;
           repeat light || apply_anywhere first_fun_sound || rewrite first_fun_spec ||
                  invert_constructor_equalities;

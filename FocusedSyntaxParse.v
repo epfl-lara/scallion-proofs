@@ -60,3 +60,34 @@ Proof.
   - eapply derive_complete in H;
       repeat light || options || destruct_match || rewrite_any.
 Qed.
+
+Program Definition parse_correct_statement: Prop :=
+  forall A (s: Syntax A) (LL1: ll1_ind s) ts v,
+    parse (focus s) ts _ = Some v <->
+    matches s ts v.
+
+Fail Next Obligation. (* no more obligations for parse_correct_statement *)
+
+Lemma parse_correct: parse_correct_statement.
+Proof.
+  unfold parse_correct_statement; lights;
+    eauto using parse_complete.
+  apply_anywhere parse_sound; rewrite unfocus_focus in *; auto.
+Qed.
+
+Lemma non_ambiguous_ll1:
+  forall ts A (s: Syntax A) v1 v2,
+    matches s ts v1 ->
+    matches s ts v2 ->
+    ll1_ind s ->
+    v1 = v2.
+Proof.
+  unfold ll1_ind; intros.
+  rewrite <- (unfocus_focus A s) in *.
+  assert (
+    ~ has_conflict_ind (core (focus s)) /\
+    ~ have_conflict_ind (layers (focus s))
+  ) as pre; [ lights | idtac ].
+  apply (parse_complete  _ _ _ pre) in H; [ idtac | lights ].
+  apply (parse_complete  _ _ _ pre) in H0; lights.
+Qed.

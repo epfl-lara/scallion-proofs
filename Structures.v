@@ -12,7 +12,7 @@ Parameter token: Type.
 Parameter id: Type.
 Parameter token_class: Type.
 
-Parameter class_eq_dec: forall n m: token_class, { n = m } + { ~ (n = m) }.
+Parameter kind_eq_dec: forall n m: token_class, { n = m } + { ~ (n = m) }.
 Parameter id_eq_dec: forall n m: id, { n = m } + { ~ (n = m) }.
 
 (* we assume a fixed number of token_classes *)
@@ -108,11 +108,11 @@ Fixpoint var_in { A } (x: id) (s: Syntax A): Prop :=
 
 Definition env := forall (x: id), Syntax (get_type x).
 Parameter e: env.
-Parameter class: token -> token_class.
-Parameter token_witness: forall (tc: token_class), { t: token | class t = tc }.
+Parameter get_kind: token -> token_class.
+Parameter token_witness: forall (tc: token_class), { t: token | get_kind t = tc }.
 
 Lemma class_token_witness:
-  forall tc, class (proj1_sig (token_witness tc)) = tc.
+  forall tc, get_kind (proj1_sig (token_witness tc)) = tc.
 Proof.
   intros.
   destruct (token_witness tc); auto.

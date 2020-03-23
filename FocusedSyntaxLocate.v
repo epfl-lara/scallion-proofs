@@ -10,7 +10,7 @@ Equations (noind) locate { A } (k: token_class) (fs: Focused_Syntax A): option (
   by wf (length (layers fs) + count_follow_by (layers fs)) lt :=
 
   locate k fs :=
-    if (in_dec class_eq_dec k (first_fun (core fs)))
+    if (in_dec kind_eq_dec k (first_fun (core fs)))
     then Some fs
     else
       match nullable_fun (core fs) with

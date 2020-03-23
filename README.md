@@ -72,24 +72,29 @@ make -j4      # takes around 13 minutes to complete
 
 
 * Theorem 1: Follows from the types assigned to the `matches` predicate in [Matches.v](Matches.v)
-* Theorem 2: [ProductiveInd.v](ProductiveInd.v)
-* Theorem 3: [NullableInd.v](NullableInd.v)
-* Theorem 4: [FirstInd.v](FirstInd.v)
-* Theorem 5: [ShouldNotFollowInd.v](ShouldNotFollowInd.v)
-* Theorem 7: Follows from the completeness of the parsing algorithm: [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
-* Theorem 8: [ShouldNotFollowComplete.v](ShouldNotFollowComplete.v)
+* Theorem 2: `productive_ind_correct` in [ProductiveInd.v](ProductiveInd.v)
+* Theorem 3: `nullable_ind_correct` in [NullableInd.v](NullableInd.v)
+* Theorem 4: `first_ind_correct` in [FirstInd.v](FirstInd.v)
+* Theorem 5: `should_not_follow_ind_sound` in [ShouldNotFollowInd.v](ShouldNotFollowInd.v)
+* Theorem 7: `non_ambiguous_ll1` in [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
+* Theorem 8: `should_not_follow_ind_correct` in [ShouldNotFollowComplete.v](ShouldNotFollowComplete.v)
 * Theorems of Section 5 are not in Coq, as we directly considered focused
   syntaxes.
-* Theorem 14: `plug_sound` and `plug_complete` in [FocusedSyntaxPlug.v](FocusedSyntaxPlug.v)
-* Theorem 15: `locate_not_none` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
+* Theorem 14: `plug_correct` in [FocusedSyntaxPlug.v](FocusedSyntaxPlug.v)
+* Theorem 15: `locate_not_none2` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
 * Theorem 16: `locate_first_ind` in [FocusedSyntaxLocate.v](FocusedSyntaxLocate.v)
-* Theorem 17: `locate_sound` and `locate_complete` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
-* Theorem 18: [FocusedSyntaxPierceMatches.v](FocusedSyntaxPierceMatches.v)
-* Theorem 19: [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
-* Theorem 20: `derive_complete` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
-* Theorem 21: `derive_sound_add` and `derive_sound_remove` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
-* Theorem 22: [FocusedSyntaxNullable.v](FocusedSyntaxNullable.v)
-* Theorem 23: [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
+* Theorem 17: `locate_correct` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
+* Theorem 18: `pierce_correct` in [FocusedSyntaxPierceMatches.v](FocusedSyntaxPierceMatches.v)
+* Theorem 19: `derive_preserves_ll1` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
+* Theorem 20: `derive_none` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
+* Theorem 21: `derive_sound` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
+* Theorem 22: `result_correct` in [FocusedSyntaxNullable.v](FocusedSyntaxNullable.v)
+* Theorem 23: `parse_correct` in [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
+
+### Acknowledgements
+
+We thank the anonymous reviewers of the artifact evaluation for their
+suggestions on improving the presentation of the proofs.
 
 [larabot-img]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/status/master
 [larabot-ref]: http://laraquad4.epfl.ch:9000/epfl-lara/scallion-proofs/builds
