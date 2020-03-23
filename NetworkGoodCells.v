@@ -273,17 +273,6 @@ Proof.
     eauto using good_inputs_top.
 Qed.
 
-Ltac rewrite_known_inputs :=
-  match goal with
-  | H: inputs _ _ = [] |- _ => rewrite H in *; clear H
-  | H: inputs _ _ = _ :: _ |- _ => rewrite H in *; clear H
-  end.
-
-Ltac rewrite_known_cells :=
-  match goal with
-  | H: cells _ _ = _ |- _ => rewrite H in *; clear H
-  end.
-
 Lemma good_cell_same_bounds:
   forall G (descr: Description G) N k b1 b2 b1' b2',
     good_cells descr N k b1 b2 ->
@@ -678,14 +667,6 @@ Proof.
 Qed.
 
 Transparent make_cell_with_state.
-
-Lemma cell_type_node_type:
-  forall G (descr : Description G) A (s: Syntax A) opt,
-    cell_type (make_cell_with_state s descr opt) = node_type A G.
-Proof.
-  unfold make_cell_with_state;
-    repeat light || destruct_match.
-Qed.
 
 Lemma good_cell_io_type:
   forall G (descr: Description G) k N b,

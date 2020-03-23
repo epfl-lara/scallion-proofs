@@ -226,6 +226,24 @@ Proof.
     repeat light || destruct_match || invert_constructor_equalities.
 Qed.
 
+Lemma compute_cell_still_make_cell:
+  forall A (s: Syntax A) G (descr: Description G) N N' k k0 opt pre,
+    cells N k = make_cell_with_state s descr opt ->
+    compute_cell N k0 pre = Some N' ->
+    exists opt', cells N' k = make_cell_with_state s descr opt'.
+Proof.
+  unfold compute_cell;
+    repeat light || destruct_match || invert_constructor_equalities; eauto.
+  unshelve eexists (@snd (Syntax A) (option (G A)) (cast _
+    (update (cells N k)
+      (eq_rect (map (fun k' : nat => cell_type (cells N k')) (inputs N k))
+         (fun H0 : list Type => hlist H0)
+         (h_map (fun k' : nat => state (cells N k')) (inputs N k))
+         (input_types (cells N k)) (PropagatorNetwork.compute_cell_obligation_1 N k pre)))));
+    try solve [ rewrite_known_cells; rewrite cell_type_node_type; reflexivity ];
+    eauto using update_make_cell2.
+Qed.
+
 Opaque compute_cells.
 Opaque compute_cell.
 
@@ -268,4 +286,53 @@ Lemma cell_type_compute_cells:
     cell_type (cells (compute_cells num_cells N ks pre) k') = cell_type (cells N k').
 Proof.
   eauto using cell_type_compute_cells'.
+Qed.
+
+
+(** Lemmas stating that all cells are of the form `make_cell_with_state` *)
+
+Lemma compute_cells_still_make_cell':
+  forall m A (s: Syntax A) G (descr: Description G) N k num_cells ks opt pre,
+    (sum_measures num_cells N, length ks) = m ->
+    cells N k = make_cell_with_state s descr opt ->
+    exists opt', cells (compute_cells num_cells N ks pre) k = make_cell_with_state s descr opt'.
+Proof.
+  induction m using measure_induction; destruct ks;
+    repeat light || compute_cells_def || destruct_match || options; eauto.
+
+  - clear matched.
+    revert i.
+    generalize (PropagatorNetwork.compute_cells_obligations_obligation_3 num_cells N n ks pre).
+    generalize (PropagatorNetwork.compute_cells_obligations_obligation_2 num_cells N n ks pre).
+    generalize (PropagatorNetwork.compute_cells_obligations_obligation_1 num_cells N n ks pre).
+    repeat light || destruct_match || options.
+
+    pose proof (compute_cell_still_make_cell _ _ _ _ _ _ _ _ _ _ H1 matched);
+      lights.
+
+
+    lazymatch goal with
+    | |- context[cells (compute_cells _ ?N ?ks ?pre) ?k] =>
+      unshelve epose proof (H _ _ _ s _ descr N k num_cells ks _ (a i1) eq_refl H5)
+    end; lights;
+      try solve [ apply left_lex; eauto using compute_cell_size ].
+
+  - clear matched.
+    revert n0.
+    generalize (PropagatorNetwork.compute_cells_obligations_obligation_5 num_cells N n ks pre).
+    generalize (PropagatorNetwork.compute_cells_obligations_obligation_1 num_cells N n ks pre).
+    repeat light || destruct_match;
+      eauto 2 with lights.
+
+    eapply H;
+      repeat light || apply right_lex;
+      eauto using cell_type_compute_cell.
+Qed.
+
+Lemma compute_cells_still_make_cell:
+  forall A (s: Syntax A) G (descr: Description G) N k num_cells ks opt pre,
+    cells N k = make_cell_with_state s descr opt ->
+    exists opt', cells (compute_cells num_cells N ks pre) k = make_cell_with_state s descr opt'.
+Proof.
+  eauto using compute_cells_still_make_cell'.
 Qed.

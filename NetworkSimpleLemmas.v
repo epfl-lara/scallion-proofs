@@ -7,21 +7,6 @@ Require Export Parser.NetworkConstruction.
 Opaque set_cell.
 Opaque io_types.
 
-Ltac instantiate_nat :=
-  match goal with
-  | H: forall x, _, n: nat |- _ =>
-    poseNew (Mark (H, n) "instantiate_nat");
-    pose proof (H n)
-  end.
-
-Ltac obvious_ineq :=
-  match goal with
-  | H: ?k >= ?k -> _ |- _ =>
-    unshelve epose proof (H _); clear H
-  | H: _ >= ?k -> _ |- _ =>
-      unshelve epose proof (H _); [ solve [ lia ] | clear H ]
-  end.
-
 Lemma same_inputs_make_network':
   forall A G (s: Syntax A) (descr: Description G) k N,
     forall k', k' < k -> inputs (make_network' s descr k N) k' = inputs N k'.
@@ -56,6 +41,14 @@ Lemma cell_make_network':
 Proof.
   destruct s;
     repeat light || destruct_match || invert_constructor_equalities.
+Qed.
+
+Lemma cell_make_network:
+  forall A (s : Syntax A) G (descr : Description G),
+    cells (make_network s descr) (sum_sizes vars) = make_cell_with_state s descr None.
+Proof.
+  unfold make_network;
+    repeat light || rewrite cell_make_network'.
 Qed.
 
 Lemma same_cells_make_network':

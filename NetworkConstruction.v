@@ -6,13 +6,17 @@ Require Import PeanoNat.
 Require Import Psatz.
 
 Require Export Parser.PropagatorNetwork.
-Require Export Parser.Option.
-Require Export Parser.Structures.
 Require Export Parser.Description.
+Require Export Parser.Cast.
 
 Open Scope type_scope.
 
 Definition node_type (A: Type) (G: Type -> Type): Type := Syntax A * option (G A).
+
+Ltac rewrite_known_cell_types2 :=
+  match goal with
+  | H: cell_type _ = node_type _ _ |- _ => rewrite H in *
+  end.
 
 Definition node_measure { A G } (n: node_type A G): nat :=
   match n with
@@ -133,3 +137,197 @@ Definition init_env_network { G } (descr: Description G): Network :=
 
 Definition make_network { A G } (s: Syntax A) (descr: Description G): Network :=
   make_network' s descr (sum_sizes vars) (init_env_network descr).
+
+
+(** A few simple lemmas about cell construction *)
+
+Lemma main_type_make_cell:
+  forall A (s: Syntax A) G (descr: Description G) (opt: option (G A)),
+    main_type (make_cell_with_state s descr opt) = A.
+Proof.
+  unfold make_cell_with_state;
+    repeat light || destruct_match.
+Qed.
+
+Lemma state_obligation:
+  forall A (s : Syntax A) G (descr : Description G) (opt : option (G A)),
+    (Syntax A * option (G A))%type = cell_type (make_cell_with_state s descr opt).
+Proof.
+  destruct s; repeat light.
+Qed.
+
+Lemma state_make_cell:
+  forall A (s: Syntax A) G (descr: Description G) (opt: option (G A)),
+    state (make_cell_with_state s descr opt) = cast (state_obligation A s G descr opt) (s, opt).
+Proof.
+  unfold make_cell_with_state, cast;
+    repeat light || destruct_match || eq_dep.
+Qed.
+
+Lemma cell_type_node_type:
+  forall G (descr : Description G) A (s: Syntax A) opt,
+    cell_type (make_cell_with_state s descr opt) = node_type A G.
+Proof.
+  unfold make_cell_with_state;
+    repeat light || destruct_match.
+Qed.
+
+
+Polymorphic Lemma f_equal_dep_1_2_3:
+  forall (f: forall (M: Type) (T: Type) (TS: list Type), (hlist TS -> T) -> (T -> nat) -> T -> Cell),
+    forall (M: Type) (M': Type)
+      (T: Type) (T': Type)
+      (TS: list Type) (TS': list Type)
+      (x3: hlist TS -> T) (x3': hlist TS' -> T')
+      (x4 : T -> nat) (x4': T' -> nat)
+      (x5: T) (x5': T'),
+      forall (H3: (hlist TS -> T) = (hlist TS' -> T'))
+        H4
+        H5,
+
+      M = M' ->
+      T = T' ->
+      TS = TS' ->
+      cast H3 x3 = x3' ->
+      cast H4 x4 = x4' ->
+      cast H5 x5 = x5' ->
+      f M T TS x3 x4 x5 = f M' T' TS' x3' x4' x5'.
+Proof.
+  destruct 1; destruct 1;
+    repeat light || f_equal || rewrite cast_irrelevance.
+Qed.
+
+Ltac add_equal_dep H f x :=
+  poseNew (Mark (f, x) "add_equal_dep");
+  pose proof (f_equal_dep _ f H);
+  pose proof (eq_sym (f_equal_dep _ f (eq_sym H))).
+
+Ltac add_equal_dep2 H f x :=
+  poseNew (Mark (H, f, x) "add_equal_dep");
+  pose proof (f_equal_dep _ f H);
+  pose proof (eq_sym (f_equal_dep _ f (eq_sym H))).
+
+Ltac rewrite_equal_dep H f x :=
+  poseNew (Mark (f, x) "rewrite_equal_dep");
+  rewrite (f_equal_dep _ f H) in *;
+  rewrite (eq_sym (f_equal_dep _ f (eq_sym H))) in *.
+
+Ltac f_equal_dep :=
+  match goal with
+  | H: ?x = _ |- context[cell_type ?x] => add_equal_dep H cell_type x
+  | H: ?x = _, H': context[cell_type ?x] |- _ => add_equal_dep H cell_type x
+  | H: ?x = _ |- context[measure ?x] => add_equal_dep H measure x
+  | H: ?x = _, H': context[measure ?x] |- _ => add_equal_dep H measure x
+  | H: ?x = _ |- context[update ?x] => add_equal_dep H update x
+  | H: ?x = _, H': context[update ?x] |- _ => add_equal_dep H update x
+  | H: ?x = _ |- context[input_types ?x] => add_equal_dep H input_types x
+  | H: ?x = _, H': context[input_types ?x] |- _ => add_equal_dep H input_types x
+  | H: ?x = _ |- context[state ?x] => add_equal_dep H state x
+  | H: ?x = _, H': context[state ?x] |- _ => add_equal_dep H state x
+  end.
+
+Ltac f_equal_dep2 :=
+  match goal with
+  | H: ?x = _ |- context[cell_type ?x] => add_equal_dep2 H cell_type x
+  | H: ?x = _, H': context[cell_type ?x] |- _ => add_equal_dep2 H cell_type x
+  | H: ?x = _ |- context[measure ?x] => add_equal_dep2 H measure x
+  | H: ?x = _, H': context[measure ?x] |- _ => add_equal_dep2 H measure x
+  | H: ?x = _ |- context[update ?x] => add_equal_dep2 H update x
+  | H: ?x = _, H': context[update ?x] |- _ => add_equal_dep2 H update x
+  | H: ?x = _ |- context[input_types ?x] => add_equal_dep2 H input_types x
+  | H: ?x = _, H': context[input_types ?x] |- _ => add_equal_dep2 H input_types x
+  | H: ?x = _ |- context[state ?x] => add_equal_dep2 H state x
+  | H: ?x = _, H': context[state ?x] |- _ => add_equal_dep2 H state x
+  end.
+
+
+Lemma update_make_cell:
+  forall G (descr : Description G) A (s : Syntax A) (N : Network) k H
+    (opt : option (G A)) pre,
+
+    cells N k = make_cell_with_state s descr opt ->
+
+    {|
+      main_type := main_type (cells N k);
+      cell_type := cell_type (cells N k);
+      input_types := input_types (cells N k);
+      update := update (cells N k);
+      measure := measure (cells N k);
+      state := update (cells N k)
+        (eq_rect (map (fun k' : nat => cell_type (cells N k')) (inputs N k))
+                 (fun H : list Type => hlist H)
+                 (h_map (fun k' : nat => state (cells N k')) (inputs N k))
+                 (input_types (cells N k)) pre) |} =
+    make_cell_with_state s descr
+      (@snd (Syntax A) (option (G A)) (cast H (update (cells N k)
+         (eq_rect (map (fun k' : nat => cell_type (cells N k')) (inputs N k))
+                  (fun H : list Type => hlist H)
+                  (h_map (fun k' : nat => state (cells N k')) (inputs N k))
+                  (input_types (cells N k)) pre)))).
+Proof.
+  unfold make_cell_with_state;
+    repeat light || destruct_match || unshelve eapply f_equal_dep_1_2_3;
+    eauto;
+    try solve [ rewrite_known_cells; lights ];
+    try solve [ repeat f_equal_dep; rewrite eq_rekt in *; eauto 2 using eq_trans, eq_rect_irrelevance2 ];
+    try solve [
+      repeat f_equal_dep; repeat eq_dep;
+      rewrite H4; lights;
+      generalize_proofs;
+      rewrite H5; cbn;
+      rewrite H in *; repeat proofs_refl || light
+    ].
+Qed.
+
+Lemma update_make_cell2:
+  forall G (descr : Description G) A (s : Syntax A) (N : Network) k H hl (opt : option (G A)),
+
+    cells N k = make_cell_with_state s descr opt ->
+
+    {|
+      main_type := main_type (cells N k);
+      cell_type := cell_type (cells N k);
+      input_types := input_types (cells N k);
+      update := update (cells N k);
+      measure := measure (cells N k);
+      state := update (cells N k) hl |} =
+    make_cell_with_state s descr
+      (@snd (Syntax A) (option (G A)) (cast H (update (cells N k) hl))).
+Proof.
+  unfold make_cell_with_state;
+    repeat light || destruct_match || unshelve eapply f_equal_dep_1_2_3;
+    eauto;
+    try solve [ rewrite_known_cells; lights ];
+    try solve [ repeat f_equal_dep; rewrite eq_rekt in *; eauto 2 using eq_trans, eq_rect_irrelevance2 ];
+    try solve [
+      repeat f_equal_dep; repeat eq_dep;
+      rewrite H4; lights;
+      repeat generalize_proofs || cbn;
+      generalize hl;
+      rewrite_known_cell_types;
+      rewrite H5;
+      repeat eq_dep || light
+    ].
+Qed.
+
+Ltac equal_main_types :=
+  match goal with
+  | H: cells ?N ?k = _ |- _ => add_equal_dep2 H main_type (cells N k)
+  end.
+
+Lemma same_cell_same_type:
+  forall A1 A2 G (s1: Syntax A1) (s2: Syntax A2) (descr: Description G) opt1 opt2,
+    make_cell_with_state s1 descr opt1 = make_cell_with_state s2 descr opt2 ->
+    A1 = A2.
+Proof.
+  unfold make_cell_with_state; repeat light || destruct_match;
+    try solve [ injection H; repeat light ].
+Qed.
+
+Ltac same_cell_same_type :=
+  match goal with
+  | H1: cells ?N ?k = make_cell_with_state ?s1 ?descr ?opt1,
+    H2: cells ?N ?k = make_cell_with_state ?s2 ?descr ?opt2 |- _ =>
+    poseNew (Mark (H1, H2) "same_cell_same_type");
+    pose proof (same_cell_same_type _ _ _ _ _ _ _ _ (eq_trans (eq_sym H1) H2))
+  end.

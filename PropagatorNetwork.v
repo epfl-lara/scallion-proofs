@@ -13,7 +13,9 @@ Require Export Parser.Lexicographic.
 Require Export Parser.Option.
 
 Record Cell: Type := mkCell {
-  main_type: Type; (* dummy field to force that equality of cells implies equality of this type *)
+  (** when building networks from syntaxes, we use the field `main_type` to
+      store the type of the syntax node corresponding to this cell *)
+  main_type: Type;
   cell_type: Type;
   input_types: list Type;
   update: hlist input_types -> cell_type;
@@ -240,3 +242,52 @@ Fail Next Obligation. (* No more obligations for compute_cells *)
 Ltac compute_cells_def :=
   rewrite compute_cells_equation_1 in * ||
   rewrite compute_cells_equation_2 in *.
+
+Ltac rewrite_known_states :=
+  match goal with
+  | H1: state _ = eq_rect _ _ (_, ?opt) _ _,
+    H2: opt_forall ?opt _ |- _ =>
+    rewrite H1
+  end.
+
+Ltac rewrite_known_cell_types :=
+  match goal with
+  | H: cell_type _ = _ |- _ => rewrite H in *
+  end.
+
+Ltac rewrite_known_updates :=
+  match goal with
+  | H: update _ = _ |- _ => rewrite H in *
+  end.
+
+Ltac rewrite_known_inputs2 :=
+  match goal with
+  | H:inputs _ _ = [] |- _ => rewrite H in *
+  | H:inputs _ _ = _ :: _ |- _ => rewrite H in *
+  end.
+
+Ltac rewrite_known_states2 :=
+  match goal with
+  | H: state _ = _ |- _ => rewrite H in *
+  end.
+
+Ltac rewrite_known_inputs :=
+  match goal with
+  | H: inputs _ _ = [] |- _ => rewrite H in *; clear H
+  | H: inputs _ _ = _ :: _ |- _ => rewrite H in *; clear H
+  end.
+
+Ltac rewrite_known_cells :=
+  match goal with
+  | H: cells _ _ = _ |- _ => rewrite H in *; clear H
+  end.
+
+Ltac rewrite_known_input_types :=
+  match goal with
+  | H: input_types _ = _ |- _ => rewrite H in *
+  end.
+
+Ltac rewrite_known_measures :=
+  match goal with
+  | H: measure _ = _ |- _ => rewrite H in *
+  end.

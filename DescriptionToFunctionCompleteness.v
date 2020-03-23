@@ -3,12 +3,24 @@ Require Import Coq.Lists.List.
 Import ListNotations.
 Require Import PeanoNat.
 
-Require Export Parser.DescriptionToFunctionSoundness.
 Require Export Parser.Monotonicity.
 Require Export Parser.HListCast.
+Require Export Parser.DescriptionInd.
+Require Export Parser.DescriptionToFunction.
+Require Export Parser.NetworkProperties.
+Require Export Parser.NetworkWipCells.
 
 Opaque compute_cells.
 Opaque range.
+
+(** In this file, we prove that, for monotonic descriptions, if a syntax `s` is
+    related to a value `v`, then the propagator network is going to return some
+    value (not necessarily `v`) *)
+Definition fun_completeness_statement: Prop :=
+  forall G (descr: Description G) A (s: Syntax A) v,
+    descr_ind descr s v ->
+    monotonic_descr descr ->
+    is_some (build_fun descr s).
 
 Definition is_up_to_date (N: Network) k: Prop :=
   (exists H,
@@ -172,7 +184,7 @@ Lemma compute_cells_up_to_date:
         (sum_sizes vars + syntax_size s0)
         (make_network s0 descr)
         (range 0 (sum_sizes vars + syntax_size s0))
-        (DescriptionToFunctionSoundness.build_fun_obligation_1 G descr A0 s0))
+        (DescriptionToFunction.build_fun_obligation_1 G descr A0 s0))
       k.
 Proof.
   intros.
@@ -215,21 +227,6 @@ Ltac derive_members :=
     pose proof (eq_sym ((f_equal_dep _ input_types (eq_sym H))))
   end; repeat eq_dep || cbn in *.
 
-Ltac rewrite_known_input_types :=
-  match goal with
-  | H: input_types _ = _ |- _ => rewrite H in *
-  end.
-
-Ltac rewrite_known_measures :=
-  match goal with
-  | H: measure _ = _ |- _ => rewrite H in *
-  end.
-
-Ltac rewrite_known_cell_types2 :=
-  match goal with
-  | H: cell_type _ = node_type _ _ |- _ => rewrite H in *
-  end.
-
 Lemma rules_to_update_epsilon:
   forall G (descr : Description G) A (R : Rule nil (G A)) (v : G A) (a: A) (opt: option (G A)) rules,
 
@@ -268,17 +265,6 @@ Proof.
          invert_constructor_equalities;
     eauto using fold_left_not_none2.
 Qed.
-
-Ltac rewrite_known_inputs2 :=
-  match goal with
-  | H:inputs _ _ = [] |- _ => rewrite H in *
-  | H:inputs _ _ = _ :: _ |- _ => rewrite H in *
-  end.
-
-Ltac rewrite_known_states2 :=
-  match goal with
-  | H: state _ = _ |- _ => rewrite H in *
-  end.
 
 Lemma rules_to_update_monotonic_1:
   forall A T
@@ -345,14 +331,6 @@ Proof.
     repeat light || options || destruct_match.
 Qed.
 
-Ltac instantiate_wip_cells k :=
-  match goal with
-  | H: wip_cells _ _ _ _ |- _ =>
-    poseNew (Mark k "instantiate_wip_cells");
-    let W := fresh "W" in
-    unshelve epose proof (H k _ _) as W; eauto with lia; unfold wip_cell in W
-  end.
-
 Ltac introduce_up :=
   match goal with
   | H: cells (compute_cells _ (make_network ?s0 ?descr) _ _) ?k = {| main_type := _ |} |- _ =>
@@ -411,62 +389,56 @@ Lemma fun_completeness':
       (compute_cells (sum_sizes vars + syntax_size s0)
                           (make_network s0 descr)
                           (range 0 (sum_sizes vars + syntax_size s0))
-                          (DescriptionToFunctionSoundness.build_fun_obligation_1 G descr A0 s0))
+                          (DescriptionToFunction.build_fun_obligation_1 G descr A0 s0))
       0 (sum_sizes vars + syntax_size s0) ->
     forall k opt,
       cells (compute_cells (sum_sizes vars + syntax_size s0)
                             (make_network s0 descr)
                             (range 0 (sum_sizes vars + syntax_size s0))
-                            (DescriptionToFunctionSoundness.build_fun_obligation_1 G descr A0 s0))
+                            (DescriptionToFunction.build_fun_obligation_1 G descr A0 s0))
             k =
         make_cell_with_state s descr opt ->
       k < sum_sizes vars + syntax_size s0 ->
       is_some opt.
 Proof.
   induction 1;
-    try solve [
-      repeat light || destruct_match || cell_equality_transitivity ||
-           unshelve instantiate_wip_cells k ||
-           unshelve instantiate_wip_cells k0 ||
-           invert_constructor_equalities || rewrite_known_inputs2 || eq_dep ||
-           main_type_solve || state_solve; try (
-        introduce_up; revert_up; try generalize_lt_right; repeat derive_members;
-        repeat rewrite_known_updates; repeat eq_dep || cbn || generalize_proofs;
-        repeat rewrite_known_measures; repeat eq_dep || cbn || generalize_proofs;
-        repeat rewrite_known_input_types; repeat eq_dep || cbn || generalize_proofs;
-        repeat rewrite_known_inputs2; repeat eq_dep || cbn || generalize_proofs;
-        repeat rewrite_known_states2;
-          repeat eq_dep || generalize_proofs || rewrite state_make_cell;
-        repeat rewrite_known_cell_types;
-          repeat eq_dep || cbn || generalize_proofs || light ||
-                 rewrite cast_hcons in * ||
-                 rewrite cast_hcons2 in *;
-        repeat unfold rules_to_update in * || invert_constructor_equalities;
-          try solve [ repeat light || destruct_match; try lia; eauto using rules_to_update_0' ];
-          try solve [ repeat light || destruct_match; eauto using small_node_measure ];
-          try solve [ repeat light || destruct_match;
-                      try lia; eapply rules_to_update_monotonic_1';  eauto;
-            try solve [ unfold monotonic_descr in *; repeat light; eauto ];
-            try solve [ unfold is_some_is_some; lights;
-                        eauto using sum_sizes_until_sum_sizes2 with lia ]
-          ];
-          try solve [ repeat light || destruct_match;
-                      try lia; eapply rules_to_update_monotonic_2';  eauto;
-            try solve [ unfold monotonic_descr in *; repeat light; eauto ];
-            try solve [ unfold is_some_is_some; lights;
-                        eauto using sum_sizes_until_sum_sizes2 with lia ]
-          ]
-      )
-    ].
+    repeat light || destruct_match || cell_equality_transitivity ||
+          unshelve instantiate_wip_cells k ||
+          unshelve instantiate_wip_cells k0 ||
+          invert_constructor_equalities || rewrite_known_inputs2 || eq_dep ||
+          main_type_solve || state_solve; try (
+      introduce_up; revert_up; try generalize_lt_right; repeat derive_members;
+      repeat rewrite_known_updates; repeat eq_dep || cbn || generalize_proofs;
+      repeat rewrite_known_measures; repeat eq_dep || cbn || generalize_proofs;
+      repeat rewrite_known_input_types; repeat eq_dep || cbn || generalize_proofs;
+      repeat rewrite_known_inputs2; repeat eq_dep || cbn || generalize_proofs;
+      repeat rewrite_known_states2;
+        repeat eq_dep || generalize_proofs || rewrite state_make_cell;
+      repeat rewrite_known_cell_types;
+        repeat eq_dep || cbn || generalize_proofs || light ||
+                rewrite cast_hcons in * ||
+                rewrite cast_hcons2 in *;
+      repeat unfold rules_to_update in * || invert_constructor_equalities;
+        try solve [ repeat light || destruct_match; try lia; eauto using rules_to_update_0' ];
+        try solve [ repeat light || destruct_match; eauto using small_node_measure ];
+        try solve [ repeat light || destruct_match;
+                    try lia; eapply rules_to_update_monotonic_1';  eauto;
+          try solve [ unfold monotonic_descr in *; repeat light; eauto ];
+          try solve [ unfold is_some_is_some; lights;
+                      eauto using sum_sizes_until_sum_sizes2 with lia ]
+        ];
+        try solve [ repeat light || destruct_match;
+                    try lia; eapply rules_to_update_monotonic_2';  eauto;
+          try solve [ unfold monotonic_descr in *; repeat light; eauto ];
+          try solve [ unfold is_some_is_some; lights;
+                      eauto using sum_sizes_until_sum_sizes2 with lia ]
+        ]
+    ).
 Qed.
 
-Lemma fun_completeness:
-  forall G (descr: Description G) A (s: Syntax A) v,
-    descr_ind descr s v ->
-    monotonic_descr descr ->
-    is_some (build_fun descr s).
+Lemma fun_completeness: fun_completeness_statement.
 Proof.
-  unfold build_fun;
+  unfold fun_completeness_statement; unfold build_fun;
     repeat light.
 
   match goal with

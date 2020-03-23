@@ -292,8 +292,3 @@ Ltac smaller_greater :=
   | H1: ?a <= ?b, H2: ?b < ?a + 1 |- _ =>
     pose proof (smaller_greater a b H1 H2); clear H1; clear H2
   end.
-
-Ltac clear_implications :=
-  repeat match goal with
-  | H: _ -> _ |- _ => clear H
-  end.

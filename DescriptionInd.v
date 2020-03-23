@@ -296,3 +296,53 @@ Ltac descr_ind_inversion :=
       poseNew (Mark H "descr_ind_inversion");
       pose proof (descr_ind_var_inversion _ _ _ _ H)
   end.
+
+Lemma in_disj_descr:
+  forall A (s1 s2: Syntax A) G (descr: Description G) v r opt1 opt2,
+    In r (disj_descr descr s1 s2) ->
+    opt_forall opt1 (descr_ind descr s1) ->
+    opt_forall opt2 (descr_ind descr s2) ->
+    r (HCons opt1 (HCons opt2 HNil)) = Some v ->
+    descr_ind descr (Disjunction s1 s2) v.
+Proof.
+  destruct opt1; destruct opt2;
+    repeat light;
+    eauto with descr_ind.
+Qed.
+
+Lemma in_seq_descr:
+  forall A1 A2 (s1: Syntax A1) (s2: Syntax A2) G (descr: Description G) v r opt1 opt2,
+    In r (seq_descr descr s1 s2) ->
+    opt_forall opt1 (descr_ind descr s1) ->
+    opt_forall opt2 (descr_ind descr s2) ->
+    r (HCons opt1 (HCons opt2 HNil)) = Some v ->
+    descr_ind descr (Sequence s1 s2) v.
+Proof.
+  destruct opt1; destruct opt2;
+    repeat light;
+    eauto with descr_ind.
+Qed.
+
+Lemma in_map_descr:
+  forall A B (f: A -> B) g (s': Syntax A) G (descr: Description G) v r opt,
+    In r (map_descr descr f g s') ->
+    opt_forall opt (descr_ind descr s') ->
+    r (HCons opt HNil) = Some v ->
+    descr_ind descr (Map f g s') v.
+Proof.
+  destruct opt;
+    repeat light;
+    eauto with descr_ind.
+Qed.
+
+Lemma in_var_descr:
+  forall x G (descr: Description G) v r opt,
+    In r (var_descr descr x (e x)) ->
+    opt_forall opt (descr_ind descr (e x)) ->
+    r (HCons opt HNil) = Some v ->
+    descr_ind descr (Var x) v.
+Proof.
+  destruct opt;
+    repeat light;
+    eauto with descr_ind.
+Qed.
