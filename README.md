@@ -71,25 +71,26 @@ make -j4      # takes 15/20 minutes to complete
 ### Cross-references with the [PLDI paper](https://arxiv.org/pdf/1911.12737.pdf)
 
 
-* Theorem 1: Follows from the types assigned to the `matches` predicate in [Matches.v](Matches.v)
-* Theorem 2: `productive_ind_correct` in [ProductiveInd.v](ProductiveInd.v)
-* Theorem 3: `nullable_ind_correct` in [NullableInd.v](NullableInd.v)
-* Theorem 4: `first_ind_correct` in [FirstInd.v](FirstInd.v)
-* Theorem 5: `should_not_follow_ind_sound` in [ShouldNotFollowInd.v](ShouldNotFollowInd.v)
-* Theorem 7: `non_ambiguous_ll1` in [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
-* Theorem 8: `should_not_follow_ind_correct` in [ShouldNotFollowComplete.v](ShouldNotFollowComplete.v)
-* Theorems of Section 5 are not in Coq, as we directly considered focused
-  syntaxes.
-* Theorem 14: `plug_correct` in [FocusedSyntaxPlug.v](FocusedSyntaxPlug.v)
-* Theorem 15: `locate_not_none2` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
-* Theorem 16: `locate_first_ind` in [FocusedSyntaxLocate.v](FocusedSyntaxLocate.v)
-* Theorem 17: `locate_correct` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
-* Theorem 18: `pierce_correct` in [FocusedSyntaxPierceMatches.v](FocusedSyntaxPierceMatches.v)
-* Theorem 19: `derive_preserves_ll1` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
-* Theorem 20: `derive_none` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
-* Theorem 21: `derive_sound` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
-* Theorem 22: `result_correct` in [FocusedSyntaxNullable.v](FocusedSyntaxNullable.v)
-* Theorem 23: `parse_correct` in [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
+* Theorem 3.1: The `matches` predicate in [Matches.v](Matches.v) forces this type
+* Theorem 4.1: `productive_ind_correct` in [ProductiveInd.v](ProductiveInd.v)
+* Theorem 4.2: `nullable_ind_correct` in [NullableInd.v](NullableInd.v)
+* Theorem 4.3: `first_ind_correct` in [FirstInd.v](FirstInd.v)
+* Theorem 4.4: `should_not_follow_ind_sound` in [ShouldNotFollowInd.v](ShouldNotFollowInd.v)
+* Theorem 4.6: `non_ambiguous_ll1` in [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
+* Theorem 4.7: `should_not_follow_ind_correct` in [ShouldNotFollowComplete.v](ShouldNotFollowComplete.v)
+* Theorem 4.8: `productive_left_recursive_not_ll1` in [LeftRecursive.v](LeftRecursive.v)
+* Theorems of Section 5 are not in Coq, as they are not relevant for the zippy algorithm with focused syntaxed.
+* Theorem 6.2: `plug_correct` in [FocusedSyntaxPlug.v](FocusedSyntaxPlug.v)
+* Theorem 6.3: `locate_not_none2` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
+* Theorem 6.4: `locate_first_ind` in [FocusedSyntaxLocate.v](FocusedSyntaxLocate.v)
+* Theorem 6.5: `locate_correct` in [FocusedSyntaxLocateMatches.v](FocusedSyntaxLocateMatches.v)
+* Theorem 6.6: `pierce_correct` in [FocusedSyntaxPierceMatches.v](FocusedSyntaxPierceMatches.v)
+* Theorem 6.7: `matches_unfocus_elem` in [FocusedSyntax.v](FocusedSyntax.v)
+* Theorem 6.8: `derive_preserves_ll1` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
+* Theorem 6.9: `derive_none` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
+* Theorem 6.10: `derive_sound` in [FocusedSyntaxDerive.v](FocusedSyntaxDerive.v)
+* Theorem 6.11: `result_correct` in [FocusedSyntaxNullable.v](FocusedSyntaxNullable.v)
+* Theorem 6.12: `parse_correct` in [FocusedSyntaxParse.v](FocusedSyntaxParse.v)
 
 ### Acknowledgements
 

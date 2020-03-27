@@ -365,6 +365,44 @@ Proof.
     ].
 Qed.
 
+Lemma matches_unfocus_drop2:
+  forall A T (ls: Layers T A) (s1 s2: Syntax T) t ts v,
+    matches (unfocus_helper ls s1) (t :: ts) v ->
+    In (get_kind t) (first_fun s1) ->
+    (forall v, matches s1 nil v -> False) ->
+    (forall ts v, matches s1 (t :: ts) v -> matches s2 ts v) ->
+    matches (unfocus_helper ls s2) ts v.
+Proof.
+  induction ls;
+    repeat light || unfocus_helper_def || destruct_layer;
+      eapply_any; eauto;
+        repeat light || invert_matches || invert_constructor_equalities || lists ||
+               matches_unfocus_helper_prefix || app_cons_destruct || rewrite <- app_assoc in *;
+        eauto with first_fun;
+        eauto with matches;
+        eauto with exfalso.
+Qed.
+
+Lemma matches_unfocus_drop_elem:
+  forall A (ls: Layers token A) t ts v,
+    matches (unfocus_helper ls (Elem (get_kind t))) (t :: ts) v ->
+    matches (unfocus_helper ls (Epsilon t)) ts v.
+Proof.
+  lights.
+  eapply matches_unfocus_drop2; eauto;
+    repeat light || invert_matches || invert_constructor_equalities;
+    eauto with first_fun;
+    eauto using first_fun_complete with matches.
+Qed.
+
+Lemma matches_unfocus_elem:
+  forall A (ls: Layers token A) t ts v,
+    matches (unfocus_helper ls (Elem (get_kind t))) (t :: ts) v <->
+    matches (unfocus_helper ls (Epsilon t)) ts v.
+Proof.
+  lights; eauto using matches_unfocus_drop_elem, matches_unfocus_prepend_one.
+Qed.
+
 Lemma matches_unfocus_inj:
   forall A T (ls: Layers T A) (s1 s2: Syntax T) v v1' v2',
     matches (unfocus_helper ls s1) [] v1' ->

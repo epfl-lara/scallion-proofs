@@ -51,6 +51,8 @@ Arguments visitable x { A }.
 
 Hint Constructors visitable: visitable.
 
+Definition left_recursive (x: id) := visitable x (e x).
+
 Program Definition visitable_inversion { A } x (s: Syntax A) (H: visitable x s) :=
   match H in visitable _ s' return
     match s' return Prop with
@@ -371,4 +373,14 @@ Proof.
   repeat light || invert_matches || matches_forget_x.
   eauto using has_conflict_var, visitable_subsyntax_conflict
     with visitable matches subsyntax has_conflict_ind.
+Qed.
+
+Lemma productive_left_recursive_not_ll1:
+  forall x,
+    productive_ind (Var x) ->
+    left_recursive x ->
+    ~ ll1_ind (Var x).
+Proof.
+  unfold ll1_ind, left_recursive; repeat light || rewrite productive_ind_correct in *;
+    eauto using self_visitable_conflict.
 Qed.
